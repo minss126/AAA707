@@ -11,12 +11,10 @@ class Client:
         self.id = client_id
         self.dataset = dataset
         self.device = device
-        self.dataset_name = dataset_name
         self.loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
         self.lr = lr
         
-        # 시스템 이질성 (Heterogeneity) 설정
-        # Fast(0~59) vs Slow(60~99)
+        # Heterogeneity (Fast vs Slow)
         if client_id < 60: 
             speed_val = np.random.lognormal(4.1, 0.2) 
             self.base_compute_factor = np.clip(speed_val, 40.0, 90.0)
@@ -32,8 +30,8 @@ class Client:
         return (compute_time + self.base_upload_time) * system_noise
 
     def train(self, global_weights, epochs):
-        num_channels = 3 if self.dataset_name == 'CIFAR10' else 1
-        model = SimpleCNN(num_channels).to(self.device)
+        # CIFAR-10은 무조건 3채널
+        model = SimpleCNN(num_channels=3).to(self.device)
         model.load_state_dict(global_weights)
         model.train()
         

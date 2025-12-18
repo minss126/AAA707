@@ -5,22 +5,19 @@ from torch.utils.data import Subset
 
 def get_dataset_realistic_noniid(dataset_name, num_clients):
     """
-    Resource-Dependent Non-IID 데이터 생성
-    - Fast Clients (0~59): Major Class (0~4) 위주
-    - Slow Clients (60~99): Minor Class (5~9) 위주
+    CIFAR-10 Resource-Dependent Non-IID Data Generation
     """
-    print(f">>> [Data] Loading {dataset_name} with Resource-Dependent Non-IID Bias...")
+    print(f">>> [Data] Loading CIFAR-10 with Resource-Dependent Non-IID Bias...")
     
-    tf = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+    # CIFAR-10 전용 Transform (3채널)
+    tf = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     data_dir = './data'
 
-    if dataset_name == 'CIFAR10':
-        train_data = datasets.CIFAR10(data_dir, train=True, download=True, transform=tf)
-        test_data = datasets.CIFAR10(data_dir, train=False, transform=tf)
-    else:
-        train_data = datasets.FashionMNIST(data_dir, train=True, download=True, transform=tf)
-        test_data = datasets.FashionMNIST(data_dir, train=False, transform=tf)
+    # 무조건 CIFAR-10 다운로드
+    train_data = datasets.CIFAR10(data_dir, train=True, download=True, transform=tf)
+    test_data = datasets.CIFAR10(data_dir, train=False, transform=tf)
     
+    # Non-IID 분배 로직
     targets = np.array(train_data.targets)
     idx_major = np.where(targets < 5)[0]  
     idx_minor = np.where(targets >= 5)[0] 

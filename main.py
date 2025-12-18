@@ -7,7 +7,6 @@ import os
 import argparse
 import pickle
 
-# 분리한 모듈 불러오기
 from src.utils import set_seed
 from src.models import SimpleCNN
 from src.data_loader import get_dataset_realistic_noniid
@@ -17,10 +16,10 @@ from src.client import Client
 # Configuration
 # ==========================================
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataset', type=str, default='CIFAR10', help="CIFAR10 or FashionMNIST")
+parser.add_argument('--dataset', type=str, default='CIFAR10') # 기본값 고정
 args = parser.parse_args()
 
-DATASET_NAME = args.dataset
+DATASET_NAME = 'CIFAR10' # 강제 고정
 NUM_CLIENTS = 100
 CLIENTS_PER_ROUND = 10
 LOCAL_EPOCHS = 5      
@@ -52,8 +51,8 @@ def evaluate(model, test_loader):
 def run_simulation(clients, test_loader, config):
     print(f"\n>>> Running Scenario: {config['name']}")
     
-    num_channels = 3 if DATASET_NAME == 'CIFAR10' else 1
-    global_model = SimpleCNN(num_channels).to(DEVICE)
+    # 3채널 고정
+    global_model = SimpleCNN(num_channels=3).to(DEVICE)
     logs = []
     participation_count = np.zeros(NUM_CLIENTS)
     
@@ -82,13 +81,13 @@ def run_simulation(clients, test_loader, config):
         current_deadline = config['fixed_deadline']
         selected_clients = []
 
-        # 2. Rescue Logic
+        # 2. Rescue
         for client, t_full in candidates:
             if t_full <= current_deadline:
                 selected_clients.append((client, LOCAL_EPOCHS))
             else:
                 if config['rescue_mode']:
-                    selected_clients.append((client, 3)) # Rescue
+                    selected_clients.append((client, 3)) 
                 else:
                     pass 
 
@@ -202,7 +201,6 @@ if __name__ == "__main__":
             acc_list.append(c / t if t > 0 else 0.0)
         per_class_accs[config['name']] = acc_list
 
-    # Save
     save_path = os.path.join(save_dir, "experiment_data.pkl")
     with open(save_path, "wb") as f:
         pickle.dump({
