@@ -1,0 +1,24 @@
+# 1. 시스템 및 가상환경 폴더 (가장 중요)
+__pycache__/
+venv/
+.env
+.DS_Store
+
+# 2. 데이터 및 결과물 폴더
+data/
+figure/
+logs/
+results/
+prev_code/
+
+# 3. 로그 파일 및 데이터 파일
+*.txt
+*.log
+*.pkl
+
+# 4. 정리되지 않은 옛날 코드들 (업로드 제외)
+main_deadline.py
+main_weighted.py
+plot_by_deadline.py
+run.sh
+run_all.sh
